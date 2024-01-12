@@ -5,8 +5,11 @@
  * See the file "readme.txt" for information on usage and redistribution of
  * this file, and for a DISCLAIMER OF ALL WARRANTIES.
  */
-package net.nextencia.rrdiagram.grammar.model;
+package net.nextencia.rrdiagram.grammar.model.expansion;
 
+import net.nextencia.rrdiagram.grammar.model.Expression;
+import net.nextencia.rrdiagram.grammar.model.GrammarToBNF;
+import net.nextencia.rrdiagram.grammar.model.GrammarToRRDiagram;
 import net.nextencia.rrdiagram.grammar.rrdiagram.RRChoice;
 import net.nextencia.rrdiagram.grammar.rrdiagram.RRElement;
 import net.nextencia.rrdiagram.grammar.rrdiagram.RRLine;
@@ -40,7 +43,7 @@ public class Repetition extends Expression {
   }
 
   @Override
-  protected RRElement toRRElement(GrammarToRRDiagram grammarToRRDiagram) {
+public RRElement toRRElement(GrammarToRRDiagram grammarToRRDiagram) {
     RRElement rrElement = expression.toRRElement(grammarToRRDiagram);
     if(minRepetitionCount == 0) {
       if(maxRepetitionCount == null || maxRepetitionCount > 1) {
@@ -52,7 +55,7 @@ public class Repetition extends Expression {
   }
 
   @Override
-  protected void toBNF(GrammarToBNF grammarToBNF, StringBuilder sb, boolean isNested) {
+public void toBNF(GrammarToBNF grammarToBNF, StringBuilder sb, boolean isNested) {
     boolean isUsingMultiplicationTokens = grammarToBNF.isUsingMultiplicationTokens();
     if(maxRepetitionCount == null) {
       if(minRepetitionCount > 0) {

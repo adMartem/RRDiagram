@@ -5,12 +5,15 @@
  * See the file "readme.txt" for information on usage and redistribution of
  * this file, and for a DISCLAIMER OF ALL WARRANTIES.
  */
-package net.nextencia.rrdiagram.grammar.model;
+package net.nextencia.rrdiagram.grammar.model.expansion;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import net.nextencia.rrdiagram.grammar.model.Expression;
+import net.nextencia.rrdiagram.grammar.model.GrammarToBNF;
+import net.nextencia.rrdiagram.grammar.model.GrammarToRRDiagram;
 import net.nextencia.rrdiagram.grammar.rrdiagram.RRChoice;
 import net.nextencia.rrdiagram.grammar.rrdiagram.RRElement;
 
@@ -30,7 +33,7 @@ public class Choice extends Expression {
   }
 
   @Override
-  protected RRElement toRRElement(GrammarToRRDiagram grammarToRRDiagram) {
+public RRElement toRRElement(GrammarToRRDiagram grammarToRRDiagram) {
     RRElement[] rrElements = new RRElement[expressions.length];
     for(int i=0; i<rrElements.length; i++) {
       rrElements[i] = expressions[i].toRRElement(grammarToRRDiagram);
@@ -39,7 +42,7 @@ public class Choice extends Expression {
   }
 
   @Override
-  protected void toBNF(GrammarToBNF grammarToBNF, StringBuilder sb, boolean isNested) {
+public void toBNF(GrammarToBNF grammarToBNF, StringBuilder sb, boolean isNested) {
     List<Expression> expressionList = new ArrayList<Expression>();
     boolean hasNoop = false;
     for(Expression expression: expressions) {

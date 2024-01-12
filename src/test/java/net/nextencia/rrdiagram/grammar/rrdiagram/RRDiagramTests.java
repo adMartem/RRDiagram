@@ -11,16 +11,16 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
 import net.nextencia.rrdiagram.grammar.model.BNFToGrammar;
-import net.nextencia.rrdiagram.grammar.model.Choice;
 import net.nextencia.rrdiagram.grammar.model.Grammar;
 import net.nextencia.rrdiagram.grammar.model.GrammarToBNF;
 import net.nextencia.rrdiagram.grammar.model.GrammarToRRDiagram;
-import net.nextencia.rrdiagram.grammar.model.Literal;
-import net.nextencia.rrdiagram.grammar.model.Repetition;
 import net.nextencia.rrdiagram.grammar.model.Rule;
 import net.nextencia.rrdiagram.grammar.model.RuleReference;
-import net.nextencia.rrdiagram.grammar.model.Sequence;
-import net.nextencia.rrdiagram.grammar.model.SpecialSequence;
+import net.nextencia.rrdiagram.grammar.model.expansion.Choice;
+import net.nextencia.rrdiagram.grammar.model.expansion.Literal;
+import net.nextencia.rrdiagram.grammar.model.expansion.Repetition;
+import net.nextencia.rrdiagram.grammar.model.expansion.Sequence;
+import net.nextencia.rrdiagram.grammar.model.expansion.SpecialSequence;
 
 /**
  * @author Lukas Eder

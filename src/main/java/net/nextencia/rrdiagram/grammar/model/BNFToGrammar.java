@@ -13,6 +13,12 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.nextencia.rrdiagram.grammar.model.expansion.Choice;
+import net.nextencia.rrdiagram.grammar.model.expansion.Literal;
+import net.nextencia.rrdiagram.grammar.model.expansion.Repetition;
+import net.nextencia.rrdiagram.grammar.model.expansion.Sequence;
+import net.nextencia.rrdiagram.grammar.model.expansion.SpecialSequence;
+
 /**
  * @author Christopher Deckers
  */

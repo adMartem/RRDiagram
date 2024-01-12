@@ -7,6 +7,7 @@
  */
 package net.nextencia.rrdiagram.grammar.model;
 
+import net.nextencia.rrdiagram.RrDiagram;
 import net.nextencia.rrdiagram.grammar.model.GrammarToRRDiagram.RuleLinkProvider;
 import net.nextencia.rrdiagram.grammar.rrdiagram.RRBreak;
 import net.nextencia.rrdiagram.grammar.rrdiagram.RRElement;
@@ -21,7 +22,11 @@ public class RuleReference extends Expression {
   private String ruleName;
 
   public RuleReference(String ruleName) {
-    this.ruleName = ruleName;
+    if (RrDiagram.MAC_DOWN) {
+        this.ruleName = ruleName.replace("\\", "\\\\").replace("_", "\\_");
+    } else {
+        this.ruleName = ruleName;
+    }
   }
 
   public String getRuleName() {
@@ -29,7 +34,7 @@ public class RuleReference extends Expression {
   }
 
   @Override
-  protected RRElement toRRElement(GrammarToRRDiagram grammarToRRDiagram) {
+  public RRElement toRRElement(GrammarToRRDiagram grammarToRRDiagram) {
     String ruleConsideredAsLineBreak = grammarToRRDiagram.getRuleConsideredAsLineBreak();
     if(ruleConsideredAsLineBreak != null && ruleConsideredAsLineBreak.equals(ruleName)) {
       return new RRBreak();
@@ -39,7 +44,7 @@ public class RuleReference extends Expression {
   }
 
   @Override
-  protected void toBNF(GrammarToBNF grammarToBNF, StringBuilder sb, boolean isNested) {
+  public void toBNF(GrammarToBNF grammarToBNF, StringBuilder sb, boolean isNested) {
     sb.append(ruleName);
     String ruleConsideredAsLineBreak = grammarToBNF.getRuleConsideredAsLineBreak();
     if(ruleConsideredAsLineBreak != null && ruleConsideredAsLineBreak.equals(ruleName)) {

@@ -1,0 +1,243 @@
+
+
+BNFProduction =
+
+    [
+        "public" | "private" | "protected"
+    ]
+    [
+       ReturnType
+       |
+       "#"
+    ]
+    (? <IDENTIFIER> ?)
+    [FormalParameters]
+    [
+      ThrowsList
+    ]
+    [
+        TreeNodeDescriptor
+    ]
+    [
+        "RECOVER_TO" ExpansionChoice
+    ]
+    ":"
+    [
+        (? <IDENTIFIER> ?)
+        ":"
+    ]
+    [
+        Block
+        ["#"]
+    ]
+    ExpansionChoice
+    ";"
+;
+
+TreeNodeDescriptor = 
+  "#" [Name|"abstract"|"interface"|"void"]
+  [
+       "("
+          [
+            (">" | ">=" | "<" | "<=" | "+" | "-")
+          ]
+          Expression
+       ")"
+  ]
+;
+
+ExpansionChoice = ExpansionSequence ( "|" ExpansionSequence)+ ;
+
+ExpansionSequence =
+  [
+    Lookahead
+  ]
+  (
+     ExpansionUnit
+  )+!
+;
+
+ExpansionUnit =
+ (
+  "UNCACHE_TOKENS"
+  |
+  Failure
+  |
+  CodeBlock
+  [
+    "#" (* applies during lookahead *)
+  ]
+  |
+  UnparsedCodeBlock
+  |
+  AttemptBlock
+  |
+  TryBlock
+  |
+  Assertion
+  |
+  ExpansionWithParentheses
+  |
+  ZeroOrOne
+  |
+  Terminal
+  |
+  NonTerminal
+ )
+ [
+    InlineTreeNodeDescriptor
+ ]
+;
+
+Failure =
+   "FAIL"
+   [
+      [":"]
+      Expression
+      |
+      CodeBlock
+   ]
+;
+
+AttemptBlock =
+ "ATTEMPT" ExpansionChoice "RECOVER"  (ExpansionWithParentheses | CodeBlock)
+;
+
+UnparsedCodeBlock =
+   "{$"
+   (
+     [<UNPARSED_CONTENT>]
+     "$}"
+   )
+;
+
+TryBlock =
+    "try" "{" ExpansionChoice "}"
+    (
+        CatchBlock
+    )*
+    [
+        FinallyBlock
+    ]
+;
+
+Assertion =
+   "ASSERT"
+   (
+    "{"
+       Expression
+    "}"
+    [ "#" ]
+    |
+    [ "~" ]
+    "("
+        ExpansionChoice
+    ")"
+   )
+   [
+       ":" Expression
+       [":"]
+   ]
+   ["=>||"]
+;
+
+ExpansionWithParentheses =
+   [LexicalStateSwitch | TokenActivation]
+   [
+       Assignment
+   ]
+   "(" ExpansionChoice ")"
+   [
+       "*"
+       |
+       "?"
+       |
+       "+"
+   ]
+   [
+       "!"
+   ]
+   ["=>||"]
+;
+
+ZeroOrOne =
+    [LexicalStateSwitch | TokenActivation]
+    [
+        Assignment
+    ]
+    "[" ExpansionChoice "]"
+     ["!"]
+     ["=>||"]
+;
+
+NonTerminal =
+  [
+    Assignment
+  ]
+  <IDENTIFIER>
+  [
+    InvocationArguments
+  ]
+  [
+     "!"
+  ]
+  [ChildNameInfo]
+  ["=>||"]
+;
+
+Terminal =
+  [
+    Assignment
+  ]
+  (RegexpStringLiteral | RegexpRef | EndOfFile)
+  [
+      "!"
+  ]
+  [
+      ChildNameInfo
+  ]
+  [
+    "=>||"
+  ]
+;
+
+InlineTreeNodeDescriptor =
+  [
+      "\"
+    |
+      Assignment
+  ]
+  "#"
+  Name
+  [
+    "(" (">" | ">=" | "<" | "<=" | "+" | "-")
+    [Expression]
+    ")"
+    |
+    "("
+    Expression
+    ")"
+  ]
+;
+
+Assignment =
+    (
+            [ "@" ]
+            Name 
+        |
+            "/"
+            Name
+            "/"
+    )
+    (
+            "="
+        |
+            ":="
+        |
+            ("=?" | ":=?")
+        |
+            ("=$" | ":=$")
+        |
+            ("+=" | ":+=")
+    )
+;

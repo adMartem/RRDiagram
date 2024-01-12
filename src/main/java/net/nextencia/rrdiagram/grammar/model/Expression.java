@@ -14,9 +14,9 @@ import net.nextencia.rrdiagram.grammar.rrdiagram.RRElement;
  */
 public abstract class Expression {
 
-  protected abstract RRElement toRRElement(GrammarToRRDiagram grammarToRRDiagram);
+  public abstract RRElement toRRElement(GrammarToRRDiagram grammarToRRDiagram);
 
-  protected abstract void toBNF(GrammarToBNF grammarToBNF, StringBuilder sb, boolean isNested);
+  public abstract void toBNF(GrammarToBNF grammarToBNF, StringBuilder sb, boolean isNested);
 
   @Override
   public String toString() {
