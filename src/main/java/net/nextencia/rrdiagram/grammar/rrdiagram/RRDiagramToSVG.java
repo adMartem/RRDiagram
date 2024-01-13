@@ -235,21 +235,213 @@ public class RRDiagramToSVG {
   public Color getSpecialSequenceFillColor() {
     return specialSequenceFillColor;
   }
-
-  public static enum EndShape {
-    PLAIN,
-    CIRCLE,
-    CROSS,
-    DOUBLE_CROSS
+  
+/*
+    <marker 
+       id="arrow"
+       refX="0" 
+       refY="3"         
+       orient="auto" 
+       markerWidth="6" 
+       markerHeight="6"  
+       markerUnits="strokeWidth">
+       <path d="M0,0 L0,6 L6,3 z" fill="#000" />
+    </marker>
+    <marker 
+       id="bow_tie"
+       refX="0" 
+       refY="3"         
+        orient="auto" 
+       markerWidth="12" 
+       markerHeight="6"  
+       markerUnits="strokeWidth">
+       <path d="M0,0 L0,6 L6,3 z" fill="#000" />
+       <path d="M12,0 L12,6 L6,3 z" fill="#000" />
+    </marker>
+    <marker 
+       id="double-arrow"
+       refX="0"         
+       refY="3" 
+       orient="auto" 
+       markerWidth="12" 
+       markerHeight="6"  
+       markerUnits="strokeWidth">
+        <path d="M0,0 L0,6 L6,3 z" fill="#000" />
+        <path d="M6,0 L6,6 L12,3 z" fill="#000" />
+    </marker>
+    <marker
+       id="circle"
+       viewBox="0 0 12 12"
+       refX="0"
+       refY="6"         
+       orient="auto" 
+       markerWidth="6"
+       markerHeight="6">
+       markerUnits="strokeWidth"
+       <circle cx="6" cy="6" r="6" fill="#000" />
+    </marker>
+    <marker
+       id="cross"
+       viewBox="0 0 12 12"
+       refX="0"
+       refY="6"         
+       orient="auto" 
+       markerWidth="6"
+       markerHeight="6">
+       markerUnits="strokeWidth"
+      <line x1="0" y1="0" x2="0" y2="12" stroke="black" stroke-width="4" />
+    </marker>
+    <marker
+       id="double-cross"
+       viewBox="0 0 12 12"
+       refX="0"
+       refY="6"         
+       orient="auto" 
+       markerWidth="6"
+       markerHeight="6">
+       markerUnits="strokeWidth"
+       <line x1="0" y1="0" x2="0" y2="12" stroke="black" stroke-width="4" />
+       <line x1="0" y1="6" x2="6" y2="6" stroke="black" stroke-width="2" />
+       <line x1="6" y1="0" x2="6" y2="12" stroke="black" stroke-width="2" />
+    </marker>
+    <marker
+      id="none"
+      viewBox="0 0 12 12"
+      refX="0"
+      refY="6"
+      markerWidth="6"
+      markerHeight="6">
+      markerUnits="strokeWidth"
+    </marker>
+*/
+  
+  public record ShapeSet (MarkerShape startShape, MarkerShape continueShape, MarkerShape stopShape) {
+      
   }
 
-  private EndShape endShape = EndShape.PLAIN;
-
-  public void setEndShape(EndShape endShape) {
-    this.endShape = endShape;
+  public static enum MarkerShape {
+    PLAIN        (
+                     "plain", 
+                     "<marker\n"
+                   + "   id=\"none\"\n"
+                   + "   viewBox=\"0 0 12 12\"\n"
+                   + "   refX=\"0\"\n"
+                   + "   refY=\"6\"\n"
+                   + "   markerWidth=\"6\"\n"
+                   + "   markerHeight=\"6\">\n"
+                   + "   markerUnits=\"strokeWidth\"\n"
+                   + "</marker>"
+                 ),
+    CIRCLE       (
+                     "circle", 
+                     "<marker\n"
+                   + "   id=\"circle\"\n"
+                   + "   viewBox=\"0 0 12 12\"\n"
+                   + "   refX=\"6\"\n"
+                   + "   refY=\"6\"\n"
+                   + "   markerWidth=\"6\"\n"
+                   + "   markerHeight=\"6\">\n"
+                   + "   <circle cx=\"6\" cy=\"6\" r=\"5\" fill=\"#fff\" stroke=\"#000\" />\n"
+                   + "</marker>"),
+    CROSS        (
+                     "cross", 
+                     "<marker\n"
+                   + "   id=\"cross\"\n"
+                   + "   viewBox=\"0 0 12 12\"\n"
+                   + "   refX=\"0\"\n"
+                   + "   refY=\"6\"\n"
+                   + "   orient=\"auto\"\n"
+                   + "   markerWidth=\"6\"\n"
+                   + "   markerHeight=\"6\">\n"
+                   + "   markerUnits=\"strokeWidth\"\n"
+                   + "   <line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"12\" stroke=\"black\" stroke-width=\"4\" />\n"
+                   + "</marker>"
+                 ),
+    DOUBLE_CROSS (
+                     "double-cross", 
+                     "<marker\n"
+                   + "   id=\"double-cross\"\n"
+                   + "   viewBox=\"0 0 12 12\"\n"
+                   + "   refX=\"0\"\n"
+                   + "   refY=\"6\"\n"
+                   + "   orient=\"auto\" \n"
+                   + "   markerWidth=\"6\"\n"
+                   + "   markerHeight=\"6\">\n"
+                   + "   markerUnits=\"strokeWidth\"\n"
+                   + "   <line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"12\" stroke=\"black\" stroke-width=\"4\" />\n"
+                   + "   <line x1=\"0\" y1=\"6\" x2=\"6\" y2=\"6\" stroke=\"black\" stroke-width=\"2\" />\n"
+                   + "   <line x1=\"6\" y1=\"0\" x2=\"6\" y2=\"12\" stroke=\"black\" stroke-width=\"2\" />\n"
+                   + "</marker>"
+                 ),
+    BOWTIE       (
+                     "bowtie", 
+                     "<marker \n"
+                   + "   id=\"bow_tie\"\n"
+                   + "   refX=\"0\" \n"
+                   + "   refY=\"3\"\n"
+                   + "   orient=\"auto\" \n"
+                   + "   markerWidth=\"12 \n"
+                   + "   markerHeight=\"6\"\n"
+                   + "   markerUnits=\"strokeWidth\">\n"
+                   + "   <path d=\"M0,0 L0,6 L6,3 z\" fill=\"#000\"/>\n"
+                   + "   <path d=\"M12,0 L12,6 L6,3 z\" fill=\"#000\"/>\n"
+                   + "</marker>"
+                 ),
+    ARROW        (
+                     "arrow",
+                     "<marker\n"
+                   + "   id=\"arrow\"\n"
+                   + "   refX=\"0\"\n"
+                   + "   refY=\"3\"\n"
+                   + "   orient=\"auto\"\n"
+                   + "   markerWidth=\"6\"\n"
+                   + "   markerHeight=\"6\"\n"
+                   + "   markerUnits=\"strokeWidth\">\n"
+                   + "   <path d=\"M0,0 L0,6 L6,3 z\" fill=\"#000\" />\n"
+                   + "</marker>"
+                 ),
+    DOUBLE_ARROW (
+                     "double-arrow",
+                     "<marker \n"
+                   + "   id=\"double-arrow\"\n"
+                   + "   refX=\"0\"\n"
+                   + "   refY=\"3\" \n"
+                   + "   orient=\"auto\"\n"
+                   + "   markerWidth=\"12\"\n"
+                   + "   markerHeight=\"6\"\n"
+                   + "   markerUnits=\"strokeWidth\">\n"
+                   + "   <path d=\"M0,0 L0,6 L6,3 z\" fill=\"#000\" />\n"
+                   + "   <path d=\"M6,0 L6,6 L12,3 z\" fill=\"#000\" />\n"
+                   + "</marker>"
+                 );
+      
+    final String markerId;
+    final String markerDef;
+    
+    private MarkerShape(String defId, String defText) {
+        this.markerId = defId;
+        this.markerDef = defText;
+    }
+    
+    public String getId() {
+        return markerId;
+    }
+    
+    public String getMarkerDef() {
+        return markerDef;
+    }
+      
   }
-
-  public EndShape getEndShape() {
-    return endShape;
+  
+  private ShapeSet endMarkerSet = ibmMarkerSet;
+  
+  public ShapeSet getEndMarkerSet() {
+      return endMarkerSet;
   }
+  
+  public void setEndMarkerSet(ShapeSet endMarkerSet) {
+      this.endMarkerSet = endMarkerSet;
+  }
+  
+  private static ShapeSet ibmMarkerSet = new ShapeSet(MarkerShape.DOUBLE_ARROW, MarkerShape.ARROW, MarkerShape.BOWTIE);
 }

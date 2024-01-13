@@ -106,7 +106,7 @@ AttemptBlock =
 UnparsedCodeBlock =
    "{$"
    (
-     [<UNPARSED_CONTENT>]
+     [ (? <UNPARSED_CONTENT> ?) ]
      "$}"
    )
 ;
@@ -174,7 +174,7 @@ NonTerminal =
   [
     Assignment
   ]
-  <IDENTIFIER>
+  (? <IDENTIFIER> ?)
   [
     InvocationArguments
   ]

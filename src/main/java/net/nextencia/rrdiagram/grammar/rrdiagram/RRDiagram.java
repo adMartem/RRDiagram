@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.nextencia.rrdiagram.common.Utils;
+import net.nextencia.rrdiagram.grammar.rrdiagram.RRDiagramToSVG.ShapeSet;
 import net.nextencia.rrdiagram.grammar.rrdiagram.RRElement.LayoutInfo;
 
 /**
@@ -132,11 +133,16 @@ public class RRDiagram {
     private int y1;
     private int x2;
     private int y2;
+    private String markerAttribute = "";
     public SvgLine(int x1, int y1, int x2, int y2) {
       this.x1 = x1;
       this.y1 = y1;
       this.x2 = x2;
       this.y2 = y2;
+    }
+    public SvgLine(int x1, int y1, int x2, int y2, String markerAttribute) {
+        this(x1, y1, x2, y2);
+        this.markerAttribute = markerAttribute;        
     }
     public int getX1() {
       return x1;
@@ -212,25 +218,29 @@ public class RRDiagram {
       if(c == null || !(c instanceof SvgLine) || !((SvgLine)c).mergeLine(x1_, y1_, x2_, y2_)) {
         connectorList.add(new SvgLine(x1_, y1_, x2_, y2_));
       }
-      if(rrDiagramToSVG != null && rrDiagramToSVG.getEndShape() != RRDiagramToSVG.EndShape.PLAIN && endSide != 0) {
+      ShapeSet lineMarkers = rrDiagramToSVG.getEndMarkerSet();
+      if(rrDiagramToSVG != null && lineMarkers != null && endSide != 0) {
         String connectorColor = Utils.convertColorToHtml(rrDiagramToSVG.getConnectorColor());
         String cssClass = setCSSClass(CSS_CONNECTOR_END_CLASS, "fill:white;stroke:" + connectorColor + ";");
-        double radius = rrDiagramToSVG.getEndShape() == RRDiagramToSVG.EndShape.CIRCLE ? 1.5 : 2;
-        String x3 = String.format("%.1f", endSide < 0 ? x1 + 0.5 : x2 - 0.5);
-        String x4 = String.format("%.1f", endSide < 0 ? x1 + radius + 0.5 : x2 - radius - 0.5);
-        int y3 = endSide < 0 ? y1 : y2;
-        String y4s = String.format("%.1f", y3 - radius);
-        String y5s = String.format("%.1f", y3 + radius);
+        double radius = lineMarkers.startShape() == RRDiagramToSVG.MarkerShape.CIRCLE ? 1.5 : 2;
+//        String x3 = String.format("%.1f", endSide < 0 ? x1 + 0.5 : x2 - 0.5);
+//        String x4 = String.format("%.1f", endSide < 0 ? x1 + radius + 0.5 : x2 - radius - 0.5);
+//        int y3 = endSide < 0 ? y1 : y2;
+//        String y4s = String.format("%.1f", y3 - radius);
+//        String y5s = String.format("%.1f", y3 + radius);
         switch (rrDiagramToSVG.getEndShape()) {
-        case CIRCLE:
-          String rs = String.format("%.2f", radius);
-          addElement("<ellipse class=\"" + cssClass + "\" cx=\""+x4+"\" cy=\""+y3+"\" rx=\""+rs+"\" ry=\""+rs+"\"/>");
-          break;
-        case DOUBLE_CROSS:
-          addElement("<line class=\"" + cssClass + "\" x1=\""+x4+"\" x2=\""+x4+"\" y1=\""+y4s+"\" y2=\""+y5s+"\"/>");
-        case CROSS:
-          addElement("<line class=\"" + cssClass + "\" x1=\""+x3+"\" x2=\""+x3+"\" y1=\""+y4s+"\" y2=\""+y5s+"\"/>");
-          break;
+            case CIRCLE:
+              String rs = String.format("%.2f", radius);
+              addElement("<ellipse class=\"" + cssClass + "\" cx=\""+x4+"\" cy=\""+y3+"\" rx=\""+rs+"\" ry=\""+rs+"\"/>");
+              break;
+            case DOUBLE_CROSS:
+              addElement("<line class=\"" + cssClass + "\" x1=\""+x4+"\" x2=\""+x4+"\" y1=\""+y4s+"\" y2=\""+y5s+"\"/>");
+            case CROSS:
+              addElement("<line class=\"" + cssClass + "\" x1=\""+x3+"\" x2=\""+x3+"\" y1=\""+y4s+"\" y2=\""+y5s+"\"/>");
+              break;
+            case PLAIN:
+                // add no end shape (can't get here)
+                break;
         }
       }
     }
