@@ -1,4 +1,10 @@
+ConnectStatement ::= 
+  ESQL_CONNECT ( ESQL_TO ( HostVariable | SqlCharacterLiteral ) ? ( ESQL_USER HostVariable ESQL_USING HostVariable ) ? | ESQL_RESET | ESQL_USER HostVariable ESQL_USING HostVariable | ( HostVariable ( ESQL_IDENTIFIED ESQL_BY HostVariable ) ? ) ? ESQL_USING ( HostVariable | SqlCharacterLiteral ) ? )
+;
 
+BNFProduction ::= 
+  ( "public" | "private" | "protected" ) ? ( ReturnType | "#" ) ? IDENTIFIER FormalParameters ? ThrowsList ? TreeNodeDescriptor ? ( "RECOVER_TO" ExpansionChoice ) ? ":" ( IDENTIFIER ":" ) ? ( Block "#" ? ) ? ExpansionChoice ";"
+;
 
 BNFProduction =
 
@@ -220,15 +226,14 @@ InlineTreeNodeDescriptor =
   ]
 ;
 
+InlineTreeNodeDescriptor ::= 
+  ( BACKSLASH | Assignment ) ? HASH Name ( "(" ( ">" | ">=" | "<" | "<=" | "+" | "-" ) Expression ? ")" | "(" Expression ")" | "(" FAIL "Expecting either an expression or an expansion here." )
+;
+
 Assignment =
-    (
-            [ "@" ]
-            Name 
-        |
-            "/"
-            Name
-            "/"
-    )
+    Name "="
+    |
+    ( "@" Name | "/" Name "/" )
     (
             "="
         |

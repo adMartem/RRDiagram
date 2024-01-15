@@ -227,7 +227,7 @@ public class BNFToGrammar {
             }
           }
           if(hasLine && (expressionList.isEmpty() || !isNoop(expressionList.get(expressionList.size() - 1)))) {
-            expressionList.add(new Sequence());
+            expressionList.add(0,new Sequence());
           }
           return new Choice(expressionList.toArray(new Expression[0]));
         }
@@ -245,10 +245,10 @@ public class BNFToGrammar {
             Chunk subChunk = chunkList.get(0);
             if(subChunk.getType() == ChunkType.CHOICE) {
               Chunk newChunk = new Chunk(ChunkType.CHOICE);
+              newChunk.addChunk(new Chunk(ChunkType.GROUP));
               for(Chunk cChunk: subChunk.chunkList) {
                 newChunk.addChunk(cChunk);
               }
-              newChunk.addChunk(new Chunk(ChunkType.GROUP));
               return newChunk.getExpression();
             }
             return new Repetition(subChunk.getExpression(), 0, 1);

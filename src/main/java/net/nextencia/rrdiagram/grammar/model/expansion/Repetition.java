@@ -49,7 +49,7 @@ public RRElement toRRElement(GrammarToRRDiagram grammarToRRDiagram) {
       if(maxRepetitionCount == null || maxRepetitionCount > 1) {
         return new RRChoice(new RRLoop(rrElement, null, 0, (maxRepetitionCount == null? null: maxRepetitionCount - 1)), new RRLine());
       }
-      return new RRChoice(rrElement, new RRLine());
+      return new RRChoice(new RRLine(), rrElement);
     }
     return new RRLoop(rrElement, null, minRepetitionCount - 1, (maxRepetitionCount == null? null: maxRepetitionCount - 1));
   }
