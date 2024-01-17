@@ -14,6 +14,11 @@ import java.util.List;
 import java.util.Map;
 
 import net.nextencia.rrdiagram.common.Utils;
+import static net.nextencia.rrdiagram.grammar.rrdiagram.RRDiagramToSVG.MarkerPos.*;
+import static net.nextencia.rrdiagram.grammar.rrdiagram.RRDiagramToSVG.ShapeSet.*;
+
+import net.nextencia.rrdiagram.grammar.rrdiagram.RRDiagramToSVG.MarkerPos;
+import net.nextencia.rrdiagram.grammar.rrdiagram.RRDiagramToSVG.MarkerShape;
 import net.nextencia.rrdiagram.grammar.rrdiagram.RRDiagramToSVG.ShapeSet;
 import net.nextencia.rrdiagram.grammar.rrdiagram.RRElement.LayoutInfo;
 
@@ -28,7 +33,7 @@ public class RRDiagram {
     this.rrElement = rrElement;
   }
 
-  private static final String SVG_ELEMENTS_SEPARATOR = "";//\n";
+  private static final String SVG_ELEMENTS_SEPARATOR = "\n";
   private static final String CSS_CONNECTOR_CLASS = "c";
   private static final String CSS_CONNECTOR_END_CLASS = "ce";
   static final String CSS_RULE_CLASS = "r";
@@ -133,16 +138,18 @@ public class RRDiagram {
     private int y1;
     private int x2;
     private int y2;
-    private String markerAttribute = "";
+    private MarkerShape markerShape;
+    private MarkerPos markerPos;
     public SvgLine(int x1, int y1, int x2, int y2) {
       this.x1 = x1;
       this.y1 = y1;
       this.x2 = x2;
       this.y2 = y2;
     }
-    public SvgLine(int x1, int y1, int x2, int y2, String markerAttribute) {
+    public SvgLine(int x1, int y1, int x2, int y2, MarkerShape markerShape, MarkerPos markerPos) {
         this(x1, y1, x2, y2);
-        this.markerAttribute = markerAttribute;        
+        this.markerShape = markerShape;
+        this.markerPos = markerPos;         
     }
     public int getX1() {
       return x1;
@@ -155,6 +162,18 @@ public class RRDiagram {
     }
     public int getY2() {
       return y2;
+    }
+    public MarkerShape getMarkerShape() {
+        return markerShape;
+    }
+    public void setMarkerShape(MarkerShape markerShape) {
+        this.markerShape = markerShape;
+    }
+    public MarkerPos getMarkerPos() {
+        return markerPos;
+    }
+    public void setMarkerPos(MarkerPos markerPos) {
+        this.markerPos = markerPos;
     }
     public boolean mergeLine(int x1, int y1, int x2, int y2) {
       if(x1 == x2 && this.x1 == this.x2 && x1 == this.x1) {
@@ -175,7 +194,9 @@ public class RRDiagram {
   }
 
   public static class SvgContent {
+      
     private List<SvgConnector> connectorList = new ArrayList<SvgConnector>();
+    
     public void addPathConnector(int x1, int y1, String path, int x2, int y2) {
       Object c = connectorList.isEmpty()? null: connectorList.get(connectorList.size() - 1);
       if(c != null) {
@@ -207,42 +228,41 @@ public class RRDiagram {
       }
     }
     public void addLineConnector(int x1, int y1, int x2, int y2) {
-      addLineConnector(x1, y1, x2, y2, null, 0);
+      addLineConnector(x1, y1, x2, y2, RRDiagramToSVG.plainJaneSet, MIDDLE);
     }
-    public void addLineConnector(int x1, int y1, int x2, int y2, RRDiagramToSVG rrDiagramToSVG, int endSide) {
+    public void addLineConnector(int x1, int y1, int x2, int y2, ShapeSet markerSet, MarkerPos markerPos) {
       int x1_ = Math.min(x1, x2);
       int y1_ = Math.min(y1, y2);
       int x2_ = Math.max(x1, x2);
       int y2_ = Math.max(y1, y2);
-      Object c = connectorList.isEmpty()? null: connectorList.get(connectorList.size() - 1);
-      if(c == null || !(c instanceof SvgLine) || !((SvgLine)c).mergeLine(x1_, y1_, x2_, y2_)) {
-        connectorList.add(new SvgLine(x1_, y1_, x2_, y2_));
+      Object previousConnector = connectorList.isEmpty()? null: connectorList.get(connectorList.size() - 1);
+      if(previousConnector == null || !(previousConnector instanceof SvgLine) || !((SvgLine)previousConnector).mergeLine(x1_, y1_, x2_, y2_)) {
+        connectorList.add(new SvgLine(x1_, y1_, x2_, y2_, markerSet.start(), markerPos));
       }
-      ShapeSet lineMarkers = rrDiagramToSVG.getEndMarkerSet();
-      if(rrDiagramToSVG != null && lineMarkers != null && endSide != 0) {
-        String connectorColor = Utils.convertColorToHtml(rrDiagramToSVG.getConnectorColor());
-        String cssClass = setCSSClass(CSS_CONNECTOR_END_CLASS, "fill:white;stroke:" + connectorColor + ";");
-        double radius = lineMarkers.startShape() == RRDiagramToSVG.MarkerShape.CIRCLE ? 1.5 : 2;
+//      if(rrDiagramToSVG != null) {
+//        String connectorColor = Utils.convertColorToHtml(rrDiagramToSVG.getConnectorColor());
+//        String cssClass = setCSSClass(CSS_CONNECTOR_END_CLASS, "fill:white;stroke:" + connectorColor + ";");
+//        double radius = lineMarkers.startShape() == RRDiagramToSVG.MarkerShape.CIRCLE ? 1.5 : 2;
 //        String x3 = String.format("%.1f", endSide < 0 ? x1 + 0.5 : x2 - 0.5);
 //        String x4 = String.format("%.1f", endSide < 0 ? x1 + radius + 0.5 : x2 - radius - 0.5);
 //        int y3 = endSide < 0 ? y1 : y2;
 //        String y4s = String.format("%.1f", y3 - radius);
 //        String y5s = String.format("%.1f", y3 + radius);
-        switch (rrDiagramToSVG.getEndShape()) {
-            case CIRCLE:
-              String rs = String.format("%.2f", radius);
-              addElement("<ellipse class=\"" + cssClass + "\" cx=\""+x4+"\" cy=\""+y3+"\" rx=\""+rs+"\" ry=\""+rs+"\"/>");
-              break;
-            case DOUBLE_CROSS:
-              addElement("<line class=\"" + cssClass + "\" x1=\""+x4+"\" x2=\""+x4+"\" y1=\""+y4s+"\" y2=\""+y5s+"\"/>");
-            case CROSS:
-              addElement("<line class=\"" + cssClass + "\" x1=\""+x3+"\" x2=\""+x3+"\" y1=\""+y4s+"\" y2=\""+y5s+"\"/>");
-              break;
-            case PLAIN:
-                // add no end shape (can't get here)
-                break;
-        }
-      }
+//        switch (rrDiagramToSVG.getEndShape()) {
+//            case CIRCLE:
+//              String rs = String.format("%.2f", radius);
+//              addElement("<ellipse class=\"" + cssClass + "\" cx=\""+x4+"\" cy=\""+y3+"\" rx=\""+rs+"\" ry=\""+rs+"\"/>");
+//              break;
+//            case DOUBLE_CROSS:
+//              addElement("<line class=\"" + cssClass + "\" x1=\""+x4+"\" x2=\""+x4+"\" y1=\""+y4s+"\" y2=\""+y5s+"\"/>");
+//            case CROSS:
+//              addElement("<line class=\"" + cssClass + "\" x1=\""+x3+"\" x2=\""+x3+"\" y1=\""+y4s+"\" y2=\""+y5s+"\"/>");
+//              break;
+//            case PLAIN:
+//                // add no end shape (can't get here)
+//                break;
+//        }
+//      }
     }
     private String getConnectorElement(RRDiagramToSVG rrDiagramToSVG) {
       if(connectorList.isEmpty()) {
@@ -318,12 +338,12 @@ public class RRDiagram {
       String[] cssClasses = cssClassToDefinitionMap.keySet().toArray(new String[0]);
       Arrays.sort(cssClasses);
       for(int i=0; i<cssClasses.length; i++) {
-        if(sb.length() > 0) {
-          sb.append(SVG_ELEMENTS_SEPARATOR);
-        }
         String cssClass = cssClasses[i];
         String definition = cssClassToDefinitionMap.get(cssClass);
         if(definition.endsWith(";")) {
+          if(sb.length() > 0) {
+            sb.append(SVG_ELEMENTS_SEPARATOR);
+          }
           sb.append(".").append(cssClass).append("{").append(definition).append("}");
         }
       }
@@ -369,33 +389,44 @@ public class RRDiagram {
     int yOffset = 5;
     for (int i = 0; i < rrElementList.size(); i++) {
       RRElement rrElement = rrElementList.get(i);
-      boolean first = i == 0, last = i == rrElementList.size() - 1;
-
+      boolean isFirst = i == 0;
+      boolean isLast = i == rrElementList.size() - 1;
+      MarkerPos markerPos = MIDDLE;
+      if (isFirst) {
+          markerPos = START;
+      } else if (isLast) {
+          markerPos = END;
+      }
       LayoutInfo layoutInfo2 = rrElement.getLayoutInfo();
       int connectorOffset2 = layoutInfo2.getConnectorOffset();
       int width2 = layoutInfo2.getWidth();
       int height2 = layoutInfo2.getHeight();
       int y1 = yOffset + connectorOffset2;
-      svgContent.addLineConnector(xOffset, y1, xOffset + 5, y1, rrDiagramToSVG, first ? -1 : 0);
-      // TODO: add decorations (like arrows)?
+      if (isFirst) {
+          svgContent.addLineConnector(xOffset, y1, xOffset + 5, y1, rrDiagramToSVG.getMarkerSet(), markerPos);
+      }
       rrElement.toSVG(rrDiagramToSVG, xOffset + 5, yOffset, svgContent);
-      svgContent.addLineConnector(xOffset + 5 + width2, y1, xOffset + 5 + width2 + 5, y1, rrDiagramToSVG, last ? 1 : 0);
+      svgContent.addLineConnector(xOffset + 5 + width2, y1, xOffset + 5 + width2 + 5, y1, rrDiagramToSVG.getMarkerSet(), markerPos);
       yOffset += height2 + 10;
     }
     String connectorElement = svgContent.getConnectorElement(rrDiagramToSVG);
     String elements = svgContent.getElements();
     // Then generate the rest (CSS and SVG container tags) based on that usage.
     StringBuilder sb = new StringBuilder();
-    sb.append("<svg version=\"1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns=\"http://www.w3.org/2000/svg\" width=\"").append(width).append("\" height=\"").append(height).append("\" viewbox=\"0 0 ").append(width).append(" ").append(height).append("\">").append(SVG_ELEMENTS_SEPARATOR);
+    sb.append("<svg version=\"1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns=\"http://www.w3.org/2000/svg\" width=\"").append(width).append("\" height=\"").append(height).append("\" viewbox=\"0 0 ").append(width).append(" ").append(height).append("\">")
+      .append(SVG_ELEMENTS_SEPARATOR);
     String styles = svgContent.getCSSStyles();
     if(styles.length() > 0) {
-      sb.append("<defs><style type=\"text/css\">").append(SVG_ELEMENTS_SEPARATOR);
+      sb.append("<defs>\n<style type=\"text/css\">").append(SVG_ELEMENTS_SEPARATOR);
       sb.append(styles).append(SVG_ELEMENTS_SEPARATOR);
-      sb.append("</style></defs>").append(SVG_ELEMENTS_SEPARATOR);
+      sb.append("</style>\n");
+      sb.append(rrDiagramToSVG.getMarkerSet().toDefs(rrDiagramToSVG.getMarkerSet()));
+      sb.append("</defs>").append(SVG_ELEMENTS_SEPARATOR);
     }
     sb.append(connectorElement);
     sb.append(elements);
     sb.append("</svg>");
+    sb.append('\n');
     return sb.toString();
   }
 

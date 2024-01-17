@@ -315,7 +315,11 @@ public class RRDiagramToSVG {
     </marker>
 */
   
-  public record ShapeSet (MarkerShape startShape, MarkerShape continueShape, MarkerShape stopShape) {
+  public record ShapeSet (MarkerShape start, MarkerShape mid, MarkerShape breakStop, MarkerShape stop) {
+
+    public String toDefs(ShapeSet markerSet) {
+        return start.getMarkerDef() + mid.getMarkerDef() + breakStop.getMarkerDef() + stop.getMarkerDef();
+    }
       
   }
 
@@ -330,7 +334,7 @@ public class RRDiagramToSVG {
                    + "   markerWidth=\"6\"\n"
                    + "   markerHeight=\"6\">\n"
                    + "   markerUnits=\"strokeWidth\"\n"
-                   + "</marker>"
+                   + "</marker>\n"
                  ),
     CIRCLE       (
                      "circle", 
@@ -342,7 +346,7 @@ public class RRDiagramToSVG {
                    + "   markerWidth=\"6\"\n"
                    + "   markerHeight=\"6\">\n"
                    + "   <circle cx=\"6\" cy=\"6\" r=\"5\" fill=\"#fff\" stroke=\"#000\" />\n"
-                   + "</marker>"),
+                   + "</marker>\n"),
     CROSS        (
                      "cross", 
                      "<marker\n"
@@ -355,7 +359,7 @@ public class RRDiagramToSVG {
                    + "   markerHeight=\"6\">\n"
                    + "   markerUnits=\"strokeWidth\"\n"
                    + "   <line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"12\" stroke=\"black\" stroke-width=\"4\" />\n"
-                   + "</marker>"
+                   + "</marker>\n"
                  ),
     DOUBLE_CROSS (
                      "double-cross", 
@@ -371,7 +375,7 @@ public class RRDiagramToSVG {
                    + "   <line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"12\" stroke=\"black\" stroke-width=\"4\" />\n"
                    + "   <line x1=\"0\" y1=\"6\" x2=\"6\" y2=\"6\" stroke=\"black\" stroke-width=\"2\" />\n"
                    + "   <line x1=\"6\" y1=\"0\" x2=\"6\" y2=\"12\" stroke=\"black\" stroke-width=\"2\" />\n"
-                   + "</marker>"
+                   + "</marker>\n"
                  ),
     BOWTIE       (
                      "bowtie", 
@@ -385,7 +389,7 @@ public class RRDiagramToSVG {
                    + "   markerUnits=\"strokeWidth\">\n"
                    + "   <path d=\"M0,0 L0,6 L6,3 z\" fill=\"#000\"/>\n"
                    + "   <path d=\"M12,0 L12,6 L6,3 z\" fill=\"#000\"/>\n"
-                   + "</marker>"
+                   + "</marker>\n"
                  ),
     ARROW        (
                      "arrow",
@@ -398,7 +402,7 @@ public class RRDiagramToSVG {
                    + "   markerHeight=\"6\"\n"
                    + "   markerUnits=\"strokeWidth\">\n"
                    + "   <path d=\"M0,0 L0,6 L6,3 z\" fill=\"#000\" />\n"
-                   + "</marker>"
+                   + "</marker>\n"
                  ),
     DOUBLE_ARROW (
                      "double-arrow",
@@ -412,7 +416,7 @@ public class RRDiagramToSVG {
                    + "   markerUnits=\"strokeWidth\">\n"
                    + "   <path d=\"M0,0 L0,6 L6,3 z\" fill=\"#000\" />\n"
                    + "   <path d=\"M6,0 L6,6 L12,3 z\" fill=\"#000\" />\n"
-                   + "</marker>"
+                   + "</marker>\n"
                  );
       
     final String markerId;
@@ -433,15 +437,31 @@ public class RRDiagramToSVG {
       
   }
   
-  private ShapeSet endMarkerSet = ibmMarkerSet;
-  
-  public ShapeSet getEndMarkerSet() {
-      return endMarkerSet;
+  public enum MarkerPos {
+      START,
+      MIDDLE,
+      CONTINUATION,
+      END
   }
   
-  public void setEndMarkerSet(ShapeSet endMarkerSet) {
-      this.endMarkerSet = endMarkerSet;
+  private ShapeSet markerSet = ballsySet;
+  
+  public ShapeSet getMarkerSet() {
+      return markerSet;
   }
   
-  private static ShapeSet ibmMarkerSet = new ShapeSet(MarkerShape.DOUBLE_ARROW, MarkerShape.ARROW, MarkerShape.BOWTIE);
+  public void setMarkerSet(ShapeSet markerSet) {
+      this.markerSet = markerSet;
+  }
+  
+  static ShapeSet ibmSet = new ShapeSet(MarkerShape.DOUBLE_ARROW, MarkerShape.ARROW, MarkerShape.ARROW, MarkerShape.BOWTIE);
+  private static ShapeSet minimalIbmSet = new ShapeSet(MarkerShape.DOUBLE_ARROW, MarkerShape.PLAIN, MarkerShape.ARROW, MarkerShape.BOWTIE);
+  static ShapeSet plainJaneSet = new ShapeSet(MarkerShape.PLAIN, MarkerShape.PLAIN, MarkerShape.PLAIN, MarkerShape.PLAIN);
+  private static ShapeSet ballsySet = new ShapeSet(MarkerShape.CIRCLE, MarkerShape.PLAIN, MarkerShape.PLAIN, MarkerShape.CIRCLE);
+  private static ShapeSet mohicanSet = new ShapeSet(MarkerShape.ARROW, MarkerShape.ARROW, MarkerShape.ARROW, MarkerShape.ARROW);
+  private static ShapeSet teaTotallerSet = new ShapeSet(MarkerShape.CROSS, MarkerShape.PLAIN, MarkerShape.CROSS, MarkerShape.CROSS);
+  private static ShapeSet malteseSet = new ShapeSet(MarkerShape.DOUBLE_CROSS, MarkerShape.PLAIN, MarkerShape.PLAIN, MarkerShape.DOUBLE_CROSS);
+  private static ShapeSet teaserSet = new ShapeSet(MarkerShape.DOUBLE_CROSS, MarkerShape.PLAIN, MarkerShape.CROSS, MarkerShape.DOUBLE_CROSS);
+  
+  
 }

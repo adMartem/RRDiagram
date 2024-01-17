@@ -1,5 +1,59 @@
-ConnectStatement ::= 
-  ESQL_CONNECT ( ESQL_TO ( HostVariable | SqlCharacterLiteral ) ? ( ESQL_USER HostVariable ESQL_USING HostVariable ) ? | ESQL_RESET | ESQL_USER HostVariable ESQL_USING HostVariable | ( HostVariable ( ESQL_IDENTIFIED ESQL_BY HostVariable ) ? ) ? ESQL_USING ( HostVariable | SqlCharacterLiteral ) ? )
+CompilationUnit = 
+    ( ProgramUnitModern | ( OOProgramUnit | ProgramUnit NestedProgramUnit * EndProgramStatement ) * ) EOF
+;
+        
+ConnectStatement =
+    
+    "CONNECT" 
+    (
+          (
+              "TO" 
+              [ 
+                ( 
+                    HostVariable 
+                  | SqlCharacterLiteral 
+                )
+              ]
+              [ 
+                (
+                  "USER" 
+                  HostVariable 
+                  <ESQL_USING> 
+                  HostVariable
+                )
+              ]
+          )   
+        | "RESET"
+        | ( 
+            "USER" 
+            HostVariable 
+            "USING" 
+            HostVariable
+          )
+        | 
+          (
+              [ 
+                (
+                    HostVariable 
+                    [ 
+                      (
+                          "IDENTIFIED" "BY"
+                          HostVariable
+                      ) 
+                    ]
+                ) 
+              ] 
+              [ 
+                (
+                    "USING"
+                    ( 
+                        HostVariable
+                      | SqlCharacterLiteral
+                    )
+                ) 
+              ] 
+          )
+    ) 
 ;
 
 BNFProduction ::= 
@@ -224,10 +278,6 @@ InlineTreeNodeDescriptor =
     Expression
     ")"
   ]
-;
-
-InlineTreeNodeDescriptor ::= 
-  ( BACKSLASH | Assignment ) ? HASH Name ( "(" ( ">" | ">=" | "<" | "<=" | "+" | "-" ) Expression ? ")" | "(" Expression ")" | "(" FAIL "Expecting either an expression or an expansion here." )
 ;
 
 Assignment =

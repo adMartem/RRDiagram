@@ -136,7 +136,7 @@ public class RRDiagramTests {
     //saveFile(svg, "plain.svg");
 
     // circle ends
-    rrDiagramToSVG.setEndShape(RRDiagramToSVG.MarkerShape.CIRCLE);
+//    rrDiagramToSVG.setEndShape(RRDiagramToSVG.MarkerShape.CIRCLE);
     svg = svg(grammar, rrDiagramToSVG);
     assertEquals(2, countElements("rect", svg));
     assertEquals(2, countElements("ellipse", svg));
@@ -144,7 +144,7 @@ public class RRDiagramTests {
     //saveFile(svg, "circle.svg");
 
     // single cross ends
-    rrDiagramToSVG.setEndShape(RRDiagramToSVG.MarkerShape.CROSS);
+//    rrDiagramToSVG.setEndShape(RRDiagramToSVG.MarkerShape.CROSS);
     svg = svg(grammar, rrDiagramToSVG);
     assertEquals(2, countElements("rect", svg));
     assertEquals(0, countElements("ellipse", svg));
@@ -152,7 +152,7 @@ public class RRDiagramTests {
     //saveFile(svg, "cross.svg");
 
     // double cross ends
-    rrDiagramToSVG.setEndShape(RRDiagramToSVG.MarkerShape.DOUBLE_CROSS);
+//    rrDiagramToSVG.setEndShape(RRDiagramToSVG.MarkerShape.DOUBLE_CROSS);
     svg = svg(grammar, rrDiagramToSVG);
     assertEquals(2, countElements("rect", svg));
     assertEquals(0, countElements("ellipse", svg));

@@ -13,7 +13,7 @@ import net.nextencia.rrdiagram.grammar.rrdiagram.RRDiagramToSVG;
 
 public class RrDiagram {
     
-    public static final boolean MAC_DOWN = false;
+    public static final boolean MAC_DOWN = true;
 
     public static void main(String[] bnfFilePaths) {
         if (bnfFilePaths != null) {
@@ -30,17 +30,16 @@ public class RrDiagram {
                     Grammar grammar = bnfToGrammar.convert(bnfReader);
                     GrammarToRRDiagram grammarToRRDiagram = new GrammarToRRDiagram();
                     RRDiagramToSVG rrDiagramToSVG = new RRDiagramToSVG();
-                    System.out.println("<ul><!-- begin svg grammar -->");
+                    System.out.println("<!-- begin svg grammar -->");
+                    System.out.println("<pre style=\"font-family:verdana\">");
                     for (Rule rule : grammar.getRules()) {
-                        System.out.println("<li><p style=\"font-family:verdana\">");
-                        System.out.println("<a id=\"" + rule.getName() + "\">" + rule.getName() + ":" + "</a>");
-                        System.out.println("<br/>");
+                        System.out.println("<a id=\"" + rule.getName() + "\">" + rule.getName() + ":" + "</a><p>");
                         RRDiagram diagram = grammarToRRDiagram.convert(rule);
                         String svg = rrDiagramToSVG.convert(diagram);
-                        System.out.println(svg);
-                        System.out.println("</p></li>");
+                        System.out.print(svg);
+                        System.out.println("</p>");
                     }
-                    System.out.println("</ul><!-- end svg grammar -->");
+                    System.out.println("<!-- end svg grammar -->");
                 } catch (IOException e) {
                     System.err.println("error reading file '" + bnfFilePath + "'; aborting");
                     e.printStackTrace();
